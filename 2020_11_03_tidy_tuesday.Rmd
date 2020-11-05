@@ -1,0 +1,66 @@
+---
+title: 'Tidy Tuesday 11/03'
+author: "Put your name here"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+```{r}
+# Read in the data for the week
+ikea <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-03/ikea.csv')
+```
+
+This week's data is all about IKEA furniture. 
+
+![](https://www.ikea.com/images/assembly-man-pictogram-4fc2f37df000615be7998ff990afd0b2.jpg){width=100}
+
+Read more about it, including definitions of variables, [here](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-03/readme.md). 
+
+```{r}
+ikea %>% 
+  group_by(category) %>% 
+  summarize(across(where(is.numeric), 
+                   list(mean, min, max),
+                   na.rm = TRUE))
+```
+
+
+```{r}
+ikea_smry <- ikea %>% 
+  group_by(category) %>% 
+  summarize(med_price = median(price))
+
+ikea %>% 
+  ggplot(aes(x = price, 
+             y = fct_reorder(category, price, median))) +
+  geom_jitter(size = .5,
+              alpha = .3, 
+              height = .2,
+              color = "gold2") +
+  geom_point(data = ikea_smry,
+             aes(x = med_price, y = category),
+             color = "darkblue") +
+  labs(title = "IKEA furniture prices (Saudi Riyals)",
+       x = "",
+       y = "") +
+  scale_x_continuous(labels = scales::comma) +
+  theme(panel.grid = element_blank(),
+        plot.background = element_rect(fill = "gray94"),
+        plot.title.position = "plot")
+```
+
