@@ -5,4 +5,4 @@ Repository for .Rmd files where I work with Tidy Tuesday data. I only spend thir
 
 |Date | Topic | File | Video | Final Product | 
 | ------ | ------ | ------ | ------ | ------ |
-|2020-11-03 | IKEA |  [Rmd](2020_11_03_tidy_tuesday.Rmd) |  [Video](https://youtu.be/iFg89oVJ1xw) | ![](images/ikea_price_final.png){width=30} |
+|2020-11-03 | IKEA |  [Rmd](2020_11_03_tidy_tuesday.Rmd) |  [Video](https://youtu.be/iFg89oVJ1xw) | ![](images/ikea_price_final_small.png) |
