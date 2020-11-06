@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
 library(tidyverse)     # for graphing and data cleaning
 library(lubridate)     # for date manipulation
 library(ggthemes)      # for even more plotting themes
+library(ggtext)        # for coloring text in labels
 theme_set(theme_minimal())       # My favorite ggplot() theme :)
 ```
 
@@ -77,11 +78,42 @@ ikea_price_graph
 
 ### Code after 30 minutes screencast
 
-I wanted to do a couple small things before calling it quits.
+I wanted to do a couple small things before calling it quits. Truthfully, there's a lot more I'd want to do, but I'm forcing myself not to spend too much more time, otherwise I'm not fairly representing what I can do in ~30 minutes.
 
 * Change size of font on x-axis so you could see all the numbers  
-* Change size and symbol of median 
+* Change size of median dots.
 
-* Label what the points are.
+* Label what the points are more clearly.
 
+
+```{r}
+ikea_price_graph_final <- 
+  ikea %>% 
+  ggplot(aes(x = price, 
+             y = fct_reorder(category, price, median))) +
+  geom_jitter(size = .5,
+              alpha = .3, 
+              height = .2,
+              color = "gold2") +
+  geom_point(data = ikea_smry,
+             aes(x = med_price, y = category),
+             color = "darkblue",
+             size = .7) +
+  labs(title = "IKEA Furniture",
+       subtitle = "<span style='color:gold2'>Actual</span> and 
+    <span style='color:darkblue'>Median</span> Prices (Saudi Riyals)",
+       x = "",
+       y = "") +
+  scale_x_continuous(labels = scales::comma) +
+  theme(panel.grid = element_blank(),
+        plot.background = element_rect(fill = "gray94"),
+        plot.title.position = "plot",
+        plot.subtitle = element_markdown(),
+        axis.text.y = element_text(size = 6),
+        axis.text.x = element_text(size = 4))
+
+ikea_price_graph_final
+
+ggsave("ikea_price_final.png", ikea_price_graph_final)
+```
 
