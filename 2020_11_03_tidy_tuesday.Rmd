@@ -31,6 +31,10 @@ This week's data is all about IKEA furniture.
 
 Read more about it, including definitions of variables, [here](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-03/readme.md). 
 
+### Code I worked on during the 30 minute screencast
+
+Summary of numeric variables
+
 ```{r}
 ikea %>% 
   group_by(category) %>% 
@@ -40,12 +44,15 @@ ikea %>%
 ```
 
 
+Final graph from video (added the part where I saved the graph).
+
 ```{r}
 ikea_smry <- ikea %>% 
   group_by(category) %>% 
   summarize(med_price = median(price))
 
-ikea %>% 
+ikea_price_graph <- 
+  ikea %>% 
   ggplot(aes(x = price, 
              y = fct_reorder(category, price, median))) +
   geom_jitter(size = .5,
@@ -62,5 +69,19 @@ ikea %>%
   theme(panel.grid = element_blank(),
         plot.background = element_rect(fill = "gray94"),
         plot.title.position = "plot")
+
+ikea_price_graph
+
+# ggsave("ikea_price.png", ikea_price_graph)
 ```
+
+### Code after 30 minutes screencast
+
+I wanted to do a couple small things before calling it quits.
+
+* Change size of font on x-axis so you could see all the numbers  
+* Change size and symbol of median 
+
+* Label what the points are.
+
 
