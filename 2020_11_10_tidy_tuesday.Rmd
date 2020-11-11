@@ -1,0 +1,42 @@
+---
+title: 'Tidy Tuesday 11/03'
+author: "Put your name here"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+library(ggtext)        # for coloring text in labels
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+```{r}
+# Read in the data for the week
+mobile <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-10/mobile.csv')
+landline <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-10/landline.csv')
+```
+
+This week's data is all about phones! 
+
+<center>
+
+![](https://images-na.ssl-images-amazon.com/images/I/61i8xYfGsFL._SL1500_.jpg){width=200} ![](https://i.pcmag.com/imagery/reviews/03xdTO0Ka4H4KvEgtSPg4c2-12..1569479325.jpg){width=200}
+</center>
+
+
+Read more about it, including definitions of variables, [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-10). 
+
+
+### Code I worked on during the 30 minute screencast
+
