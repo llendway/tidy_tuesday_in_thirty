@@ -71,7 +71,7 @@ landline %>%
 
 Added some details after 30 minute video.
 
-```{r}
+```{r, eval=FALSE}
 world_map <- map_data("world")
 
 landline %>% 
@@ -93,12 +93,11 @@ landline %>%
        subtitle = "Year: {closest_state}",
        caption = "Data from Ourworldindata.org, viz by @lisalendway")
   
-```
 
-
-```{r}
 anim_save("landline_over_time.gif", path = "images/")
 ```
+
+![](images/landline_over_time.gif)
 
 In the previous plot, there are missing countries. This code investigates which countries are missing. 
 
@@ -113,7 +112,7 @@ world_map %>%
 
 create similar animated map for mobile
 
-```{r}
+```{r, eval=FALSE}
 world_map <- map_data("world")
 
 mobile %>% 
@@ -129,21 +128,20 @@ mobile %>%
   expand_limits(x = world_map$long, y = world_map$lat) + 
   theme_map() +
   theme(legend.background = element_blank(),
-        plot.background = element_rect("gray70")) +
+        plot.background = element_rect("#F8F3ED")) +
   transition_states(year) +
   labs(title = "Mobile subscriptions per 100 people",
        subtitle = "Year: {closest_state}",
        caption = "Data from Ourworldindata.org, viz by @lisalendway")
   
-```
-
-```{r}
 anim_save("mobile_over_time.gif", path = "images/")
 ```
 
+![](images/mobile_over_time.gif)
+
 Using `geom_polygon()` instead of `geom_map()` - this kept crashing my computer and I don't have time to debug.
 
-```{r}
+```{r, eval=FALSE}
 world_map <- map_data("world")
 
 landline %>% 
