@@ -1,0 +1,35 @@
+---
+title: 'Tidy Tuesday 11/24'
+author: "Lisa Lendway"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+```{r}
+# Read in the data for the week
+hike_data <- readr::read_rds(url('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-24/hike_data.rds'))
+```
+
+This week's data is all Washington Trails! Read more about it, including definitions of variables, [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-24). 
+
+## Code I worked on during the 30 minute screencast
+
+
+## Code after 30 minutes
+
