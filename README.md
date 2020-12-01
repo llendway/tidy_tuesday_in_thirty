@@ -7,4 +7,4 @@ Repository for .Rmd files where I work with Tidy Tuesday data. I only spend thir
 | ------ | ------ | ------ | ------ | ------ |
 |2020-11-03 | IKEA |  [Rmd](2020_11_03_tidy_tuesday.Rmd) |  [Video](https://youtu.be/iFg89oVJ1xw) | ![](images/ikea_price_final.png) |
 |2020-11-10 | Phones | [Rmd](2020_11_10_tidy_tuesday.Rmd) | [Video](https://youtu.be/fcu4NqDcO4c) | ![](images/mobile_over_time.gif) |
-|2020-11-24 | Washington Hiking Trails| [Rmd](2020_11_24_tidy_tuesday.Rmd) | [Video]() | ![](images/hikes_ggplotly.png)
+|2020-11-24 | Washington Hiking Trails| [Rmd](2020_11_24_tidy_tuesday.Rmd) | [Video](https://youtu.be/R-QcTB17p28) | ![](images/hikes_ggplotly.png)
