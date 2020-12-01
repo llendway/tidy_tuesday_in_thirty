@@ -78,3 +78,10 @@ hike_data %>%
 
 ## Code after 30 minutes
 
+```{r}
+hike_ggplotly <- ggplotly(hike_plot)
+
+htmlwidgets::saveWidget(hike_ggplotly, 
+                        "hike_plot.html")
+```
+
