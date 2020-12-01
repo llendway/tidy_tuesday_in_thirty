@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
 library(tidyverse)     # for graphing and data cleaning
 library(lubridate)     # for date manipulation
 library(ggthemes)      # for even more plotting themes
+library(plotly)
 
 theme_set(theme_minimal())       # My favorite ggplot() theme :)
 ```
@@ -29,6 +30,50 @@ hike_data <- readr::read_rds(url('https://raw.githubusercontent.com/rfordatascie
 This week's data is all Washington Trails! Read more about it, including definitions of variables, [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-24). 
 
 ## Code I worked on during the 30 minute screencast
+
+```{r}
+hike_plot <-
+hike_data %>% 
+  separate(length,
+           into = c("large", "small", "units", "way"), 
+           extra = "merge", 
+           convert = TRUE, 
+           remove = FALSE) %>% 
+  mutate(miles = ifelse(way == "one-way",
+                        2*(large + small/10),
+                        large + small/10),
+         good_for_kids = str_detect(features, 
+                                    "Good for kids"),
+         gain = parse_number(gain)) %>% 
+  filter(good_for_kids) %>% 
+  select(-length, -large, -small, -units, -way, -features, -description) %>% 
+  ggplot(aes(miles, gain, label = name)) +
+  geom_point(size = .4, alpha = .5)
+
+
+ggplotly(hike_plot)
+  
+```
+
+```{r}
+hike_data %>% 
+  separate(length,
+           into = c("large", "small", "units", "way"), 
+           extra = "merge", 
+           convert = TRUE, 
+           remove = FALSE) %>% 
+  mutate(miles = ifelse(way == "one-way",
+                        2*(large + small/10),
+                        large + small/10),
+         good_for_kids = str_detect(features, 
+                                    "Good for kids"),
+         gain = parse_number(gain),
+         miles_cat = cut_number(miles, n = 5),
+         gain_cat = cut_number(gain, n = 5)) %>% 
+  filter(good_for_kids) %>% 
+  arrange(miles_cat, gain_cat, miles) %>% 
+  select(name, miles, gain, highpoint, rating, description)
+```
 
 
 ## Code after 30 minutes
