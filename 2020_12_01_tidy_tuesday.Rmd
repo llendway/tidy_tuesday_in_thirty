@@ -1,0 +1,124 @@
+---
+title: 'Tidy Tuesday 12/1'
+author: "Lisa Lendway"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+library(gghighlight)
+library(ggtext)
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+The data this week is about Toronto Shelters. Read more details [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-12-01). The data originally come from Open Data Toronto and have been turned into an R Package by Sharla Gelfand. Check out more about the package [here](https://sharlagelfand.github.io/opendatatoronto/). 
+
+```{r}
+# Read in the data for the week
+shelters <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-01/shelters.csv')
+```
+
+## within 30 minute
+
+```{r}
+shelters %>% 
+  count(organization_name, program_name)
+```
+
+```{r}
+shelters %>% 
+  group_by(organization_name, occupancy_date) %>% 
+  summarize(total_capacity = sum(capacity, na.rm = TRUE),
+            total_occupancy = sum(occupancy, na.rm = TRUE),
+            occupancy_rate = total_occupancy/total_capacity) %>% 
+  filter(occupancy_rate != 0) %>% 
+  ggplot(aes(x = occupancy_date, 
+             y = occupancy_rate,
+             color = organization_name,
+             group = organization_name)) +
+  geom_line() +
+  gghighlight(occupancy_rate > 1)
+```
+
+
+```{r, fig.width=6, fig.height=6}
+shelters %>% 
+  group_by(organization_name, occupancy_date) %>% 
+  summarize(total_capacity = sum(capacity, na.rm = TRUE),
+            total_occupancy = sum(occupancy, na.rm = TRUE),
+            occupancy_rate = total_occupancy/total_capacity) %>% 
+  ungroup() %>% 
+  mutate(year = year(occupancy_date)) %>% 
+  group_by(organization_name, year) %>% 
+  summarize(avg_occupancy_rate = mean(occupancy_rate),
+            avg_capacity = mean(total_capacity),
+            min_capacity = min(total_capacity),
+            max_capacity = max(total_capacity)) %>% 
+  ggplot(aes(y = as.factor(year), 
+             x = avg_occupancy_rate)) +
+  geom_point() +
+  facet_wrap(vars(fct_reorder(organization_name, 
+                              avg_occupancy_rate,
+                              median)))
+```
+
+
+## after 30 minute
+
+I decided to go back to the first one and improve it a bit.
+
+```{r, fig.width=7, fig.height=3}
+smry_by_date <- shelters %>% 
+  group_by(occupancy_date) %>% 
+  summarize(overall_capacity = sum(capacity, na.rm = TRUE),
+            overall_occupancy = sum(occupancy, na.rm = TRUE),
+            overall_occ_rate = overall_occupancy/overall_capacity) 
+
+final_graph <-
+  shelters %>% 
+  group_by(organization_name, occupancy_date) %>% 
+  summarize(total_capacity = sum(capacity, na.rm = TRUE),
+            total_occupancy = sum(occupancy, na.rm = TRUE),
+            occupancy_rate = total_occupancy/total_capacity) %>% 
+  filter(occupancy_rate >= .50) %>% 
+  ggplot(aes(x = occupancy_date, 
+             y = occupancy_rate)) +
+  geom_line(aes(group = organization_name),
+            color = "gray", size = .2) +
+  geom_line(data = smry_by_date,
+            aes(x = occupancy_date,
+                y = overall_occ_rate),
+            color = "darkblue") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Occupancy rates of shelters by <span style = 'color: gray;'>organization</span> and <span style = 'color: darkblue;'>overall</span>",
+       subtitle = "The few dates with occupancy rates less than 50% were omitted",
+       x = "",
+       y = "",
+       caption = "Viz by @lisalendway, data from Open Data Toronto") +
+  theme_minimal(base_size = 10) +
+  theme(plot.background = element_rect(fill ="#EDEBE3"),
+        plot.title.position = "plot",
+        plot.title = element_markdown())
+
+final_graph
+```
+
+```{r, eval=FALSE}
+ggsave("images/toronto_shelter.png",
+       final_graph, 
+       width = 7,
+       height = 3, 
+       units = "in")
+```
+
