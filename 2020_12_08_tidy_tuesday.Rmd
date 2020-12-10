@@ -1,0 +1,91 @@
+---
+title: 'Tidy Tuesday 12/8'
+author: "Lisa Lendway"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+library(tidytext)      # for analyzing text data
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+The data this week is from the BBC's list of 100 inspiring and influential women from around the world for 2020. Read more details [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-12-08). 
+
+```{r}
+# Read in the data for the week
+women <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-08/women.csv')
+```
+
+
+## within 30 minute
+
+```{r}
+women %>% 
+  count(role, sort = TRUE)
+```
+
+```{r}
+women_words <- women %>% 
+  select(-img, -role) %>% 
+  unnest_tokens(word, description) %>% 
+  anti_join(stop_words,
+            by = "word")
+
+final_plot <- women_words %>% 
+  count(word, sort = TRUE) %>% 
+  slice_max(n = 10, order_by = n) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = n, y = word)) +
+  geom_segment(aes(xend = 0, yend = word),
+               color = "#4EA8C1",
+               size = .2,
+               linetype = "dashed") +
+  geom_point(size = 3,
+             color = "#138BAC") +
+  geom_text(aes(x = -.05, label = word), 
+            size = 2.5, 
+            hjust = 1) +
+  scale_x_continuous(limits = c(-1,NA)) +
+  labs(title = "Top words used to describe the 100 most influential women of 2020",
+       x = "Number of times the word was used",
+       y = "",
+       caption = "Data from BBC and viz by @lisalendway") +
+  theme_minimal(base_size = 8) +
+  theme(panel.grid = element_blank(),
+        plot.title.position = "plot",
+        axis.text.y = element_blank(),
+        plot.background = element_rect(fill = "#E2F1F5"))
+
+final_plot
+```
+
+```{r, eval=FALSE}
+ggsave("images/top100_women.png",
+       final_plot, 
+       width = 5,
+       height = 4, 
+       units = "in")
+```
+
+```{r}
+women_words %>% 
+  filter(category != "All") %>% 
+  group_by(category) %>% 
+  count(word) %>% 
+  slice_max(n = 10, order_by = n) %>% 
+  ungroup() %>% 
+  arrange(category, desc(n))
+```
+
