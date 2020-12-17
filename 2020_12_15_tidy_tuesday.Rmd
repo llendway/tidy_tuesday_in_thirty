@@ -1,0 +1,89 @@
+---
+title: 'Tidy Tuesday 12/15'
+author: "Lisa Lendway"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+library(tidytext)      # for analyzing text data
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+The data this week is from Data.World about American Ninja Warrior. Read more details [here](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-12-15/readme.md). 
+
+```{r}
+# Read in the data for the week
+ninja_warrior <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-15/ninja_warrior.csv')
+
+```
+
+
+## within 30 minute
+
+```{r}
+ninja_warrior %>% 
+  group_by(location) %>% 
+  summarize(n = n(),
+            n_seasons = n_distinct(season)) %>% 
+  arrange(desc(n_seasons))
+```
+
+```{r}
+ninja_warrior %>% 
+  count(obstacle_name, sort = TRUE)
+```
+
+```{r}
+final_plot <-ninja_warrior %>% 
+  unnest_tokens(word, 
+                obstacle_name, 
+                drop = FALSE) %>% 
+  anti_join(stop_words,
+            by = "word") %>% 
+  mutate(n_unique_names = n_distinct(obstacle_name)) %>% 
+  group_by(word) %>% 
+  summarize(n = n(),
+            prop_name = n()/mean(n_unique_names)) %>% 
+  arrange(desc(prop_name)) %>% 
+  filter(n > 10) %>% 
+  ggplot(aes(x = prop_name, 
+             y = fct_reorder(word, prop_name))) +
+  geom_col(fill = "#0047A2") +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(x = "",
+       y = "",
+       title = "Words used to describe Ninja Warrior obstacles",
+       subtitle = "% of obstacles that contain the word",
+       caption = "Viz by @lisalendway") +
+    theme(panel.grid = element_blank(),
+        plot.title.position = "plot",
+        plot.background = element_rect(fill = "#EAEAEA"))
+
+final_plot
+```
+
+
+
+
+```{r, eval=FALSE}
+ggsave("images/ninja_warrior.png",
+       final_plot, 
+       width = 5,
+       height = 5, 
+       units = "in")
+```
+
+
+
