@@ -46,16 +46,18 @@ ninja_warrior %>%
 ```
 
 ```{r}
-final_plot <-ninja_warrior %>% 
+final_plot <- ninja_warrior %>% 
   unnest_tokens(word, 
                 obstacle_name, 
                 drop = FALSE) %>% 
   anti_join(stop_words,
             by = "word") %>% 
-  mutate(n_unique_names = n_distinct(obstacle_name)) %>% 
+# I realized later that I want the total number of names, not total distinct, because I am counting all uses of each name #
+#  mutate(n_unique_names = n_distinct(obstacle_name)) %>% 
+  mutate(n_names = n()) %>% 
   group_by(word) %>% 
   summarize(n = n(),
-            prop_name = n()/mean(n_unique_names)) %>% 
+            prop_name = n()/mean(n_names)) %>% 
   arrange(desc(prop_name)) %>% 
   filter(n > 10) %>% 
   ggplot(aes(x = prop_name, 
@@ -65,8 +67,8 @@ final_plot <-ninja_warrior %>%
   labs(x = "",
        y = "",
        title = "Words used to describe Ninja Warrior obstacles",
-       subtitle = "% of obstacles that contain the word",
-       caption = "Viz by @lisalendway") +
+       subtitle = "% of obstacles that contain the word \n * obstacles can be included more than once",
+       caption = "Data from Data.World | Viz by @lisalendway") +
     theme(panel.grid = element_blank(),
         plot.title.position = "plot",
         plot.background = element_rect(fill = "#EAEAEA"))
@@ -86,4 +88,66 @@ ggsave("images/ninja_warrior.png",
 ```
 
 
+## After 30
 
+I realized after making the video that I didn't really assess correctly how often words in the obstacle name occur. So, I tried again below.
+
+```{r}
+final_plot2 <- ninja_warrior %>% 
+  count(obstacle_name, sort = TRUE) %>% 
+  unnest_tokens(word, 
+                obstacle_name, 
+                drop = FALSE) %>% 
+  anti_join(stop_words,
+            by = "word") %>% 
+  mutate(unique_names = n_distinct(obstacle_name)) %>% 
+  group_by(word) %>% 
+  summarize(n_names = n(),
+            prop_names = n()/mean(unique_names),
+            times_used = sum(n)) %>% 
+  arrange(desc(n_names)) %>% 
+  filter(n_names > 3 | times_used > 20) %>% 
+  ggplot(aes(x = prop_names, 
+             y = fct_reorder(word, prop_names))) +
+  geom_point(aes(size = times_used),
+             color = "#0047A2") +
+  geom_segment(aes(xend = 0, yend = word),
+               color = "#0047A2",
+               size = .2) +
+  geom_curve(aes(x = .034, y = "wall", 
+                 xend=.05, yend="bridge"),
+             size = .3,
+             curvature = .2) +
+  annotate(geom = "text", 
+           x = .051, 
+           y = "steps", 
+           label = "Featured 116 times") +
+  geom_curve(aes(x = .019, y = "flip", 
+                 xend=.05, yend="jumping"),
+             size = .3,
+             curvature = -.2) +
+  annotate(geom = "text", 
+           x = .051, 
+           y = "flying", 
+           label = "Featured 9 times") +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(x = "",
+       y = "",
+       title = "Words used to describe Ninja Warrior obstacles",
+       subtitle = "% of obstacles that contain the word \n size of point reflects how many times it was featured",
+       caption = "Data from Data.World | Viz by @lisalendway") +
+    theme(panel.grid = element_blank(),
+        plot.title.position = "plot",
+        plot.background = element_rect(fill = "#EAEAEA"),
+        legend.position = "none")
+
+final_plot2
+```
+
+```{r, eval=FALSE}
+ggsave("images/ninja_warrior2.png",
+       final_plot2, 
+       width = 4.5,
+       height = 6.5, 
+       units = "in")
+```
