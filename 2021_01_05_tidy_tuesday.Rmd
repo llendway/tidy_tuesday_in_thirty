@@ -1,0 +1,114 @@
+---
+title: 'Tidy Tuesday 01/05'
+author: "Lisa Lendway"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+library(ggtext)        # for adding color to titles
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+The data this week is about transit costs. Read more details [here](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-01-05/readme.md). 
+
+```{r}
+# Read in the data for the week
+transit_cost <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv') %>% 
+  drop_na(e)
+```
+
+
+## within 30 minute
+
+
+```{r}
+transit_cost %>% 
+  mutate(tunnel_per_num = tunnel/length) %>% 
+  ggplot(aes(x = tunnel_per_num)) +
+    geom_histogram()
+
+transit_cost %>% 
+  mutate(tunnel_per_num = tunnel/length) %>% 
+  ggplot(aes(x = stations)) +
+    geom_histogram()
+
+transit_cost %>% 
+  mutate(tunnel_per_num = tunnel/length) %>% 
+  ggplot(aes(x = length)) +
+    geom_histogram()
+
+transit_cost %>% 
+  mutate(tunnel_per_num = tunnel/length) %>% 
+  ggplot(aes(x = cost_km_millions)) +
+    geom_histogram()
+```
+
+```{r}
+transit_cost %>% 
+  mutate(in_us = country == "US",
+         majority_tunnel = tunnel/length > .5) %>% 
+  ggplot(aes(y = cost_km_millions, 
+             x = stations,
+             color = in_us)) +
+  geom_point(size = .5, alpha = .5) +
+  scale_y_log10(label = scales::dollar) +
+  scale_color_manual(values = c("FALSE" = "lightgray", "TRUE" = "yellow")) +
+  labs(x = "",
+       y = "",
+       title = "Cost in kilometers per million USD by number of stations, <span style = 'color: yellow;'>US</span> ") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#00163F"),
+        plot.title = element_markdown(colour = "white"),
+        axis.text = element_text(color = "white"))
+```
+
+## After 30
+
+```{r}
+final_plot <- transit_cost %>% 
+  mutate(in_us = country == "US",
+         majority_tunnel = tunnel/length > .5) %>% 
+  ggplot(aes(y = cost_km_millions, 
+             x = stations,
+             color = in_us)) +
+  geom_point(size = .5, alpha = .5) +
+  scale_y_log10(label = scales::dollar) +
+  scale_x_continuous(breaks = seq(0,1000,20)) +
+  scale_color_manual(values = c("FALSE" = "#3B86A0", "TRUE" = "#D19B3C")) +
+  labs(x = "",
+       y = "",
+       title = "Cost in kilometers per million USD by number of stations",
+       subtitle = "How does the <span style = 'color: #D19B3C;'>US</span> compare?") +
+  theme_void() +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#00163F"),
+        plot.title = element_text(color = "white", size = 12),
+        plot.subtitle = element_markdown(colour = "white", size = 10),
+        plot.title.position = "plot",
+        axis.text = element_text(color = "white", size = 8))
+```
+
+```{r, eval=FALSE}
+ggsave("images/transit_cost_by_stations.png",
+       final_plot, 
+       width = 7,
+       height = 4, 
+       units = "in")
+```
+
+
+
+
+
