@@ -11,3 +11,4 @@ Repository for .Rmd files where I work with Tidy Tuesday data. I only spend thir
 | 2020-12-01 | Toronto Shelters | [Rmd](2020_12_01_tidy_tuesday.Rmd) | [Video](https://youtu.be/QwiqEr1Fz3k) | ![](images/toronto_shelter.png) |
 | 2020-12-08 | BBC's top 100 women of 2020 | [Rmd](2020_12_08_tidy_tuesday.Rmd) | [Video](https://youtu.be/1OvMrcnP6uE) | ![](images/top100_women.png) |
 | 2020-12-15 | Ninja Warrior | [Rmd](2020_12_15_tidy_tuesday.Rmd) | [Video](https://youtu.be/HwA6M8JeGtY) | ![](images/ninja_warrior2.png) |
+| 2021-01-05 | Transit costs | [Rmd](2021_01_05_tidy_tuesday.Rmd) | [Video](https://youtu.be/-Bitcm2nLI8) ![](images/transit_cost_by_stations.png)
