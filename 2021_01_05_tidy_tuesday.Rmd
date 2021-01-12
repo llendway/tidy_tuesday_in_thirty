@@ -89,7 +89,7 @@ final_plot <- transit_cost %>%
   scale_color_manual(values = c("FALSE" = "#3B86A0", "TRUE" = "#D19B3C")) +
   labs(x = "",
        y = "",
-       title = "Cost in kilometers per million USD by number of stations",
+       title = "Cost per kilometer (million USD) by number of stations",
        subtitle = "How does the <span style = 'color: #D19B3C;'>US</span> compare?") +
   theme_void() +
   theme(legend.position = "none",
