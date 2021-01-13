@@ -57,7 +57,7 @@ art_gganim_start <- artwork %>%
              group = id)) +
   geom_rect(alpha = 0, color = "gray") +
   theme_void() +
-  transition_states(year) +
+  transition_manual(year) +
   labs(title = "Size of Artwork in Tate Art Museum",
        subtitle = "Year: {closest_state}",
        caption = "Viz by @lisalendway")
@@ -65,25 +65,59 @@ art_gganim_start <- artwork %>%
 animate(art_gganim_start, 
         nframes = 370,
         duration = 60)
-
-anim_save("art_anim.gif", path = "images/")
 ```
 
 
 
 ## After 30
 
+Made a couple changes
+
 ```{r}
-final_plot <- 
+
+year_smry <- artwork %>% 
+  drop_na(width, height) %>% 
+  group_by(year) %>% 
+  summarize(avg_width = mean(width),
+            avg_height = mean(height)) %>% 
+  mutate(left = -avg_width/2,
+         right = avg_width/2,
+         top = avg_height/2,
+         bottom = -avg_height/2)
+
+art_gganim_start <- artwork %>% 
+  drop_na(width, height) %>% 
+  select(id, year, width, height) %>% 
+#  sample_n(size = 10000) %>% 
+  mutate(left = -width/2,
+         right = width/2,
+         top = height/2, 
+         bottom = -height/2) %>% 
+  ggplot(aes(xmin = left,
+             xmax = right,
+             ymin = bottom,
+             ymax = top)) +
+  geom_rect(aes(group = id),
+            alpha = 0, 
+            color = "gray") +
+  geom_rect(data = year_smry,
+            alpha = 0,
+            color = "black") +
+  theme_void() +
+  transition_manual(year) +
+  labs(title = "Tate Art Museum size variation",
+       subtitle = "Year created: {current_frame}",
+       caption = "Viz by @lisalendway")
+
+animate(art_gganim_start, 
+        nframes = 370,
+        duration = 30)
+
+anim_save("art_anim.gif", path = "images/")
 ```
 
-```{r, eval=FALSE}
-ggsave("images/.png",
-       final_plot, 
-       width = 7,
-       height = 4, 
-       units = "in")
-```
+
+
 
 
 
