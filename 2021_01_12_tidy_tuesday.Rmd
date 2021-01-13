@@ -1,0 +1,91 @@
+---
+title: 'Tidy Tuesday 01/12'
+author: "Lisa Lendway"
+output: 
+  html_document:
+    df_print: paged
+    code_download: true
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+# You may want to comment this out at first so you see important messages and warnings
+knitr::opts_chunk$set(echo = TRUE, error=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r libraries}
+library(tidyverse)     # for graphing and data cleaning
+library(lubridate)     # for date manipulation
+library(ggthemes)      # for even more plotting themes
+library(ggtext)        # for adding color to titles
+library(gganimate)     # for animation
+theme_set(theme_minimal())       # My favorite ggplot() theme :)
+```
+
+The data this week is are from the Tate Art Museum. Read more details [here](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-01-12/readme.md). 
+
+```{r}
+# Read in the data for the week
+artwork <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-12/artwork.csv')
+artists <- readr::read_csv("https://github.com/tategallery/collection/raw/master/artist_data.csv")
+
+```
+
+
+## within 30 minute
+
+```{r}
+artwork %>% 
+  summarize(n_distinct(year))
+```
+
+
+
+```{r}
+art_gganim_start <- artwork %>% 
+  drop_na(width, height) %>% 
+  select(id, year, width, height) %>% 
+#  sample_n(size = 10000) %>% 
+  mutate(left = -width/2,
+         right = width/2,
+         top = height/2, 
+         bottom = -height/2) %>% 
+  ggplot(aes(xmin = left,
+             xmax = right,
+             ymin = bottom,
+             ymax = top,
+             group = id)) +
+  geom_rect(alpha = 0, color = "gray") +
+  theme_void() +
+  transition_states(year) +
+  labs(title = "Size of Artwork in Tate Art Museum",
+       subtitle = "Year: {closest_state}",
+       caption = "Viz by @lisalendway")
+
+animate(art_gganim_start, 
+        nframes = 370,
+        duration = 60)
+
+anim_save("art_anim.gif", path = "images/")
+```
+
+
+
+## After 30
+
+```{r}
+final_plot <- 
+```
+
+```{r, eval=FALSE}
+ggsave("images/.png",
+       final_plot, 
+       width = 7,
+       height = 4, 
+       units = "in")
+```
+
+
+
+
+
